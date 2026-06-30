@@ -1,0 +1,63 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "apollo-mcp"
+version = "0.1.0"
+description = "Model Context Protocol (MCP) server and CLI for Apollo.io API integration (Python port via FastMCP)"
+readme = "README.md"
+license = { file = "LICENSE" }
+requires-python = ">=3.10"
+authors = [
+    { name = "dyngai" },
+]
+keywords = ["mcp", "apollo", "api", "sales", "prospecting", "lead-generation", "fastmcp"]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Topic :: Software Development :: Libraries :: Python Modules",
+]
+dependencies = [
+    "fastmcp>=3.2.4",
+    "httpx>=0.27.0",
+    "pydantic>=2.7.0",
+    "python-dotenv>=1.0.0",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=8.0.0",
+    "pytest-asyncio>=0.23.0",
+    "pytest-cov>=5.0.0",
+    "pytest-httpx>=0.30.0",
+    "respx>=0.21.0",
+]
+
+[project.scripts]
+apollo-mcp = "apollo_mcp.server:main"
+apollo-cli = "apollo_mcp.cli:main"
+
+[project.urls]
+Homepage = "https://github.com/dyngai/apollo-mcp"
+Repository = "https://github.com/dyngai/apollo-mcp"
+Issues = "https://github.com/dyngai/apollo-mcp/issues"
+
+[tool.hatch.build.targets.wheel]
+packages = ["apollo_mcp"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+asyncio_mode = "auto"
+markers = [
+    "integration: tests that hit the real Apollo API (require APOLLO_API_KEY)",
+]
+filterwarnings = [
+    "ignore::DeprecationWarning",
+]

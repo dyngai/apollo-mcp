@@ -1,0 +1,52 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ["3.10", "3.11", "3.12", "3.13"]
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v5
+        with:
+          enable-cache: true
+
+      - name: Set up Python ${{ matrix.python-version }}
+        run: uv python install ${{ matrix.python-version }}
+
+      - name: Install dependencies
+        run: uv sync --extra dev
+
+      # Integration tests need a live Apollo key and are excluded here; they
+      # auto-skip without APOLLO_API_KEY anyway.
+      - name: Run unit tests
+        run: uv run pytest -m "not integration" --cov=apollo_mcp --cov-report=term-missing
+
+  readme:
+    name: README numbers are current
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v5
+        with:
+          enable-cache: true
+
+      - name: Install dependencies
+        run: uv sync --extra dev
+
+      # Fails the build if the test counts or coverage badge in README.md have
+      # drifted from what the suite actually measures.
+      - name: Check README badges and counts
+        run: uv run python scripts/coverage_badge.py --check
